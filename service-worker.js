@@ -1,7 +1,7 @@
 const CACHE_NAME = 'gtfs-counter-v2';
 const CORE_ASSETS = [
   './',
-  './gtfs_counter_app_27a.html',
+  './gtfs_counter_app_27c.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
@@ -26,7 +26,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      caches.match('./gtfs_counter_app_27a.html')
+      caches.match('./gtfs_counter_app_27c.html')
     );
     return;
   }
@@ -35,3 +35,4 @@ self.addEventListener('fetch', event => {
     caches.match(event.request).then(res => res || fetch(event.request))
   );
 });
+
