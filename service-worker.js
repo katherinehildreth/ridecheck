@@ -1,15 +1,23 @@
-const CACHE_NAME = 'gtfs-counter-v3';
+const CACHE_NAME = 'gtfs-counter-v4';
+
 const CORE_ASSETS = [
-  './',
-  './gtfs_counter_app_27c.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  '/ridecheck/gtfs_counter_app_27c.html',
+  '/ridecheck/manifest.json',
+  '/ridecheck/icon-192.png',
+  '/ridecheck/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(CORE_ASSETS))
+    caches.open(CACHE_NAME).then(async cache => {
+      for (const asset of CORE_ASSETS) {
+        try {
+          await cache.add(asset);
+        } catch (e) {
+          // Allow install to succeed even if one asset fails
+        }
+      }
+    })
   );
   self.skipWaiting();
 });
@@ -17,7 +25,9 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)))
+      Promise.all(
+        keys.map(key => (key !== CACHE_NAME ? caches.delete(key) : null))
+      )
     )
   );
   self.clients.claim();
@@ -26,16 +36,14 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      caches.match('./gtfs_counter_app_27c.html')
+      caches
+        .match('/ridecheck/gtfs_counter_app_27c.html', { ignoreSearch: true })
         .then(response => response || fetch(event.request))
     );
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then(res => res || fetch(event.request))
+    caches.match(event.request).then(response => response || fetch(event.request))
   );
 });
-
-
-
