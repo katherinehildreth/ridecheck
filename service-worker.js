@@ -27,6 +27,7 @@ self.addEventListener('fetch', event => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
       caches.match('./gtfs_counter_app_27c.html')
+        .then(response => response || fetch(event.request))
     );
     return;
   }
@@ -35,4 +36,5 @@ self.addEventListener('fetch', event => {
     caches.match(event.request).then(res => res || fetch(event.request))
   );
 });
+
 
