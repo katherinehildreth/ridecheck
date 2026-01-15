@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gtfs-counter-v2';
+const CACHE_NAME = 'gtfs-counter-v3';
 const CORE_ASSETS = [
   './',
   './gtfs_counter_app_27c.html',
@@ -36,5 +36,6 @@ self.addEventListener('fetch', event => {
     caches.match(event.request).then(res => res || fetch(event.request))
   );
 });
+
 
 
