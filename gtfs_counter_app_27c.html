@@ -141,17 +141,25 @@ function filterBlocks(){
   const serviceIds = new Set();
   const cal = gtfsData['calendar']||[];
   const ex = gtfsData['calendar_dates']||[];
-  cal.forEach(r=>{
-    const start=new Date(r.start_date.slice(0,4)+"-"+r.start_date.slice(4,6)+"-"+r.start_date.slice(6,8));
-    const end=new Date(r.end_date.slice(0,4)+"-"+r.end_date.slice(4,6)+"-"+r.end_date.slice(6,8));
-    if(date>=start && date<=end && r[dow]==="1") serviceIds.add(r.service_id);
-  });
-  ex.forEach(r=>{
-    if(r.date===dateStr.replaceAll('-','')){
-      if(r.exception_type==="1") serviceIds.add(r.service_id);
-      if(r.exception_type==="2") serviceIds.delete(r.service_id);
-    }
-  });
+  
+const ymd = dateStr.replaceAll('-', '');
+
+// calendar.txt
+cal.forEach(r => {
+  if (ymd >= r.start_date && ymd <= r.end_date && r[dow] === "1") {
+    serviceIds.add(r.service_id);
+  }
+});
+
+// calendar_dates.txt (overrides calendar)
+ex.forEach(r => {
+  if (r.date === ymd) {
+    if (r.exception_type === "1") serviceIds.add(r.service_id);
+    if (r.exception_type === "2") serviceIds.delete(r.service_id);
+  }
+});
+
+  
   const trips=gtfsData['trips']||[];
   const blocks=[...new Set(trips.filter(t=>serviceIds.has(t.service_id)).map(t=>t.block_id))].filter(Boolean).sort((a,b)=>a-b);
   const sel=document.getElementById('blockSelect');
@@ -322,4 +330,5 @@ document.getElementById('nextStop').onclick=()=>{
 </script>
 </body>
 </html>
+
 
